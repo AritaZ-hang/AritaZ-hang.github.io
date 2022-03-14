@@ -1,0 +1,218 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>上游分析：BAM文件格式介绍 | WordsOverFlow:(</title><meta name="keywords" content="上游分析"><meta name="author" content="Arita Zhang"><meta name="copyright" content="Arita Zhang"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="样品经二代测序下机后得到的就是BAM文件。 参考：bam格式文件详解 IntroductionBAM文件头： 1234567891011121314151617181920212223242526272829@HD     VN:1.3  SO:coordinate # VN: 格式版本 SO：排序类型（unknown（default），unsorted，queryname，coordinate）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="上游分析：BAM文件格式介绍">
+<meta property="og:url" content="https://aritaz-hang.github.io/2022/03/14/bam-introduction/index.html">
+<meta property="og:site_name" content="WordsOverFlow:(">
+<meta property="og:description" content="样品经二代测序下机后得到的就是BAM文件。 参考：bam格式文件详解 IntroductionBAM文件头： 1234567891011121314151617181920212223242526272829@HD     VN:1.3  SO:coordinate # VN: 格式版本 SO：排序类型（unknown（default），unsorted，queryname，coordinate）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://aritaz-hang.github.io/2022/03/14/bam-introduction/bam_introduction.png">
+<meta property="article:published_time" content="2022-03-14T02:17:17.000Z">
+<meta property="article:modified_time" content="2022-03-14T02:30:45.788Z">
+<meta property="article:author" content="Arita Zhang">
+<meta property="article:tag" content="上游分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://aritaz-hang.github.io/2022/03/14/bam-introduction/bam_introduction.png"><link rel="shortcut icon" href="/img/logo2.png"><link rel="canonical" href="https://aritaz-hang.github.io/2022/03/14/bam-introduction/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '上游分析：BAM文件格式介绍',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-03-14 10:30:45'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar2.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo/"><i class="fa-fw fa fa-cubes"></i><span> 自说自话</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">WordsOverFlow:(</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo/"><i class="fa-fw fa fa-cubes"></i><span> 自说自话</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">上游分析：BAM文件格式介绍</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-03-14T02:17:17.000Z" title="发表于 2022-03-14 10:17:17">2022-03-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-03-14T02:30:45.788Z" title="更新于 2022-03-14 10:30:45">2022-03-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E4%B8%8A%E6%B8%B8%E5%88%86%E6%9E%90/">上游分析</a></span></div><div class="meta-secondline"></div></div></div><article class="post-content" id="article-container"><p>样品经二代测序下机后得到的就是BAM文件。</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36608036/article/details/104630366">bam格式文件详解</a></p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>BAM文件头：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">@HD     VN:1.3  SO:coordinate # VN: 格式版本 SO：排序类型（unknown（default），unsorted，queryname，coordinate），Picard排序后可以自动更新排序类型，Samtools不行 </span><br><span class="line">@SQ     SN:chrM LN:16571 # SN：参考序列名 LN：参考序列长度 （这里是比对人的全基因组）chrM:线粒体基因 </span><br><span class="line">@SQ     SN:chr1 LN:249250621 </span><br><span class="line">@SQ     SN:chr2 LN:243199373 </span><br><span class="line">@SQ     SN:chr3 LN:198022430 </span><br><span class="line">@SQ     SN:chr4 LN:191154276 </span><br><span class="line">@SQ     SN:chr5 LN:180915260 </span><br><span class="line">@SQ     SN:chr6 LN:171115067 </span><br><span class="line">@SQ     SN:chr7 LN:159138663 </span><br><span class="line">@SQ     SN:chr8 LN:146364022 </span><br><span class="line">@SQ     SN:chr9 LN:141213431 </span><br><span class="line">@SQ     SN:chr10        LN:135534747 </span><br><span class="line">@SQ     SN:chr11        LN:135006516 </span><br><span class="line">@SQ     SN:chr12        LN:133851895 </span><br><span class="line">@SQ     SN:chr13        LN:115169878 </span><br><span class="line">@SQ     SN:chr14        LN:107349540 </span><br><span class="line">@SQ     SN:chr15        LN:102531392 </span><br><span class="line">@SQ     SN:chr16        LN:90354753 </span><br><span class="line">@SQ     SN:chr17        LN:81195210 </span><br><span class="line">@SQ     SN:chr18        LN:78077248 </span><br><span class="line">@SQ     SN:chr19        LN:59128983 </span><br><span class="line">@SQ     SN:chr20        LN:63025520 </span><br><span class="line">@SQ     SN:chr21        LN:48129895</span><br><span class="line">@SQ     SN:chr22        LN:51304566 </span><br><span class="line">@SQ     SN:chrX LN:155270560 </span><br><span class="line">@SQ     SN:chrY LN:59373566 </span><br><span class="line">@RG     ID:N701_Exp69_sample1   PL:ILLUMINA     SM:N701_Exp69_sample1 # ID：样本的ID号 PL：测序平台名 SM：样本名 </span><br><span class="line">@PG     ID:samtools     PN:samtools     VN:1.5  CL:samtools reheader header.sam pairsForIGV.bam </span><br><span class="line">@PG     ID:samtools.1   PN:samtools     PP:samtools     VN:1.14 CL:samtools view -h jaccardPairsForIGV.bam</span><br></pre></td></tr></table></figure>
+
+<p>BAM文件里的一条序列可能be like: </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NS500711:112:HN3H7BGX5:1:22203:1759:18340       163     chrM    1       40      18S22M  =       5       44      AAATAAGACATCACGATGGATCACAGGTCTATCACCCTAT      AAAAAEEEEEEEAEEEEEEEEEEEE/EEEAEEEEEEAEEE        NM:i:0  MD:Z:22 AS:i:22 XS:i:30 XA:Z:chr17,+22020709,40M,2;   RG:Z:N701_Exp69_sample1 XB:Z:actcaataccatgcggttagt</span><br></pre></td></tr></table></figure>
+
+<p>对该序列进行分拆 &amp; 解释：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">NS500711:112:HN3H7BGX5:1:22203:1759:18340 #QNAME：比对的序列名称 163 #FLAG：表示比对类型 都可以用二进制表征 </span><br><span class="line">chrM #RENAME:比对上的参考序列名 </span><br><span class="line">1  #POS 1-Based的比对上的最左边的定位 </span><br><span class="line">40  #MAPQ 比对质量 </span><br><span class="line">18S22M  #CIGAR Extended CIGAR string（操作符：MIDNSHP）比对结果信息；匹配碱基数，可变剪接等 </span><br><span class="line">=  #MRNM 相匹配的另外一条序列 </span><br><span class="line">5   #MPOS 1-Based leftmost Mate Position （相比于MRNM列来讲意思和POS差不多） 相匹配的另一条序列的位置 </span><br><span class="line">44  #ISIZE 插入片段长度 </span><br><span class="line">AAATAAGACATCACGATGGATCACAGGTCTATCACCCTAT  #SEQ 和参考序列在同一个链上比对的序列（若比对结果在负义链上，则序列是其反向重复序列，反向互补序列）</span><br><span class="line">AAAAAEEEEEEEAEEEEEEEEEEEE/EEEAEEEEEEAEEE  #QUAL 比对序列的质量 </span><br><span class="line">NM:i:0  MD:Z:22 AS:i:22 XS:i:30 XA:Z:chr17,+22020709,40M,2;    RG:Z:N701_Exp69_sample1 # Read Group 样本名 </span><br><span class="line">XB:Z:actcaataccatgcggttagt #我怀疑你是Barcode</span><br></pre></td></tr></table></figure>
+
+<p>FLAG的具体解释：<a target="_blank" rel="noopener" href="https://broadinstitute.github.io/picard/explain-flags.html">Decoding SAM Flags</a></p>
+<h2 id="详细解释"><a href="#详细解释" class="headerlink" title="详细解释"></a>详细解释</h2><p><strong>第一列：QNAME</strong></p>
+<p>进行reads比对时通常表示reads的名字，如果这条reads比对到多条序列或比对到这条序列的多个位置，相同名字会出现多次。如果是pair-end reads，相同名字会出现2次，分别表示来自于R1文件的reads和R2文件的reads，如果其matepair reads也比对2个位置，也会出现2次，则相同名字共出现4次，如果一条reads也比对2个位置，则其matepair比对1个位置，则共出现3次，如果其matepair reads没有比对上序列也会出现1次（第三列显示“*”），所以pair-end测序，R1文件和R2文件同时mapping，相同reads的id最少出现2次。</p>
+<p><strong>第二列：FLAG</strong></p>
+<p>数值结果如下：</p>
+<p>1（1）该read是成对的paired reads中的一个</p>
+<p>2（10）paired reads中每个都正确比对到参考序列上</p>
+<p>4（100）该read没比对到参考序列上</p>
+<p>8（1000）与该read成对的matepair read没有比对到参考序列上</p>
+<p>16（10000）该read其反向互补序列能够比对到参考序列</p>
+<p>32（100000）与该read成对的matepair read其反向互补序列能够比对到参考序列</p>
+<p>64（1000000）在paired reads中，该read是与参考序列比对的第一条</p>
+<p>128（10000000）在paired reads中，该read是与参考序列比对的第二条</p>
+<p>256（100000000）该read是次优的比对结果</p>
+<p>512（1000000000）该read没有通过质量控制</p>
+<p>1024（10000000000）由于PCR或测序错误产生的重复reads</p>
+<p>2048（100000000000）补充匹配的read</p>
+<p><strong>第三列：RNAME</strong></p>
+<p>表示read比对的那条序列的序列名称（名称与头部的@SQ相对应），如果这列是“*”，可以认为这条read没有比对上的序列，则这一行的第四，五，八，九 列是“0”，第六，七列与该列是相同的表示方法</p>
+<p><strong>第四列：POS</strong></p>
+<p>表示read比对到RNAME这条序列的最左边的位置，如果该read能够完全比对到这条序列（CIGAR string为M）则这个位置是read的第一个碱基比对的位置，如果该read的反向互补序列比对到这条序列，则这个位置是read的反向互补序列的第一个碱基比对的位置，所以无论该read是正向比对到该序列，或是其反向互补序列比对到该序列，比对结果均是最左端的比对位置</p>
+<p><strong>第五列：MAPQ</strong></p>
+<p>表示为mapping的质量值，mapping Quality, It equals -10log10Pr{mapping position is wrong}, rounded to the nearest integer, A value 255 indicates that the mapping quality is not available. 该值的计算方法是mapping的错误率的-10log10值，之后四舍五入得到的整数，如果值为255表示mapping值是不可用的，如果是unmapped read则MAPQ为0，一般在使用bwa mem或bwa aln（bwa 0.7.12-r1039版本）生成的sam文件，第五列为60表示mapping率最高，一般结果是这一列的数值是从0到60，且0和60这两个数字出现次数最多</p>
+<p><strong>第六列：CIGAR</strong></p>
+<p>CIGAR string，可以理解为reads mapping到第三列序列的mapping状态，对于mapping状态可分为以下几类：</p>
+<p>M：alignment match (can be a sequence match or mismatch)</p>
+<p>表示read可mapping到第三列的序列上，则read的碱基序列与第三列的序列碱基相同，表示正常的mapping结果，M表示完全匹配，但是无论reads与序列的正确匹配或是错误匹配该位置都显示为M</p>
+<p>I：insertion to the reference</p>
+<p>表示read的碱基序列相对于第三列的RNAME序列，有碱基的插入</p>
+<p>D：deletion from the reference</p>
+<p>表示read的碱基序列相对于第三列的RNAME序列，有碱基的删除</p>
+<p>N：skipped region from the reference</p>
+<p>表示可变剪接位置</p>
+<p>P：padding (silent deletion from padded reference)</p>
+<p>S：soft clipping (clipped sequences present in SEQ)</p>
+<p>H：hard clipping (clipped sequences NOT present in SEQ)</p>
+<p>clipped均表示一条read的序列被分开，之所以被分开，是因为read的一部分序列能匹配到第三列的RNAME序列上，而被分开的那部分不能匹配到RNAME序列上。</p>
+<p>“=”表示正确匹配到序列上</p>
+<p>“X”表示错误匹配到序列上</p>
+<p>而H只出现在一条read的前端或末端，但不会出现在中间，S一般会和H成对出现，当有H出现时，一定会有一个与之对应的S出现，例如：162M89S、162H89M、149M102S、149H102M、40S211M、20M1D20M211H S可以单独出现，而H必须有与之对应的S出现时才可能出现，不可在相同第一列的情况下单独出现。</p>
+<p>N：如果是mRNA-to-genome，N出现的位置代表内含子，其它比对形式出现N时则没有具体解释</p>
+<p>M/I/S/=/X：这些数值的加和等于第10列SEQ的长度</p>
+<p><strong>第七列：MRNM</strong></p>
+<p>这条reads第二次比对的位置，在利用bwa mem产生sam文件时，如果该列是“”而第3列RNAME不是“”则表示该reads比对到第3列显示序列名的序列上，而没有比对到其他位置，在利用bwa aln及bwa sampe比对生成的sam文件，如果和上述情况相同，则第7列为“=”，上述情况均表示该reads只比对到这一个位置</p>
+<p>如果第3列RNAME和第7列MRNM都为“*”，则说明这条reads没有匹配上的序列，如果这条reads匹配两个序列，则第一个序列的名称出现在第3列，而第二个序列的名称出现在第7列</p>
+<p><strong>第八列：MPOS</strong></p>
+<p>该列表示与该reads对应的mate pair reads的比对位置，如果这对pair-end reads比对到同一条reference序列上，在sam文件中reads的id出现2次，Read1比对的第4列等于Read2比对的第8列。同样Read1比对的第8列等于Read2比对的第4列。例如：</p>
+<p>第1列（Read id）····第4列（Read1比对位置）····第8列（mate-pair reads比对位置） 22699:1759····124057649····124057667 22699:1759····124057667····124057649</p>
+<p>相同的reads id一个来自Read1文件，一个来自Read2文件，第4列和第8列是对应的</p>
+<p><strong>第九列：ISIZE</strong></p>
+<p>TLEN：signed observed Template LENgth （可以理解为文库插入片段长度）</p>
+<p>如果R1端的read和R2端的read能够mapping到同一条Reference序列上（即第三列RNAME相同），则该列的值表示第8列减去第4列加上第6列的值，R1端和R2端相同id的reads其第九列值相同，但该值为一正一负，R1文件的reads和R2文件的reads，相同id的reads要相对来看。在进行该第列值的计算时，如果取第6列的数值，一定要取出现M的值，S或H的值不能取。</p>
+<p>the unisgned observed template length equals the number of base from the leftmost mapped base to the rightmost mappedbase. Theleftmost segment has a plus sign and the rightmost has a minus sign</p>
+<p>处理bam文件的主要生信软件有</p>
+<p>bwa，bowtie2，samtools，bedtools等</p>
+<p>看mapping等多方面结果和统计，bedtools工具中genomeCoverageBed的功能是：Compute the coverage of a feature file among a genome</p>
+<h2 id="查看BAM文件"><a href="#查看BAM文件" class="headerlink" title="查看BAM文件"></a>查看BAM文件</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 如查看该BAM文件的前50行</span> </span><br><span class="line">samtools view -h jaccardPairsForIGV.bam |head -n50</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Arita Zhang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://aritaz-hang.github.io/2022/03/14/bam-introduction/">https://aritaz-hang.github.io/2022/03/14/bam-introduction/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://AritaZ-hang.github.io" target="_blank">WordsOverFlow:(</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E4%B8%8A%E6%B8%B8%E5%88%86%E6%9E%90/">上游分析</a></div><div class="post_share"><div class="social-share" data-image="/2022/03/14/bam-introduction/bam_introduction.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/01/15/scvi-tools-trap/"><img class="next-cover" src="/2022/01/15/scvi-tools-trap/scvi-tools.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">记在用scvi-tools时踩过的坑</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar2.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Arita Zhang</div><div class="author-info__description">-流而不盈 持中守正-</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/AritaZ-hang"><i class="fab fa-github"></i><span>Follow Me(๑•̀ㅂ•́)و✧</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/AritaZ-hang" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:cosmos_clarify@foxmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%A6%E7%BB%86%E8%A7%A3%E9%87%8A"><span class="toc-number">2.</span> <span class="toc-text">详细解释</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8BBAM%E6%96%87%E4%BB%B6"><span class="toc-number">3.</span> <span class="toc-text">查看BAM文件</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/14/bam-introduction/" title="上游分析：BAM文件格式介绍"><img src="/2022/03/14/bam-introduction/bam_introduction.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="上游分析：BAM文件格式介绍"/></a><div class="content"><a class="title" href="/2022/03/14/bam-introduction/" title="上游分析：BAM文件格式介绍">上游分析：BAM文件格式介绍</a><time datetime="2022-03-14T02:17:17.000Z" title="发表于 2022-03-14 10:17:17">2022-03-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/01/15/scvi-tools-trap/" title="记在用scvi-tools时踩过的坑"><img src="/2022/01/15/scvi-tools-trap/scvi-tools.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="记在用scvi-tools时踩过的坑"/></a><div class="content"><a class="title" href="/2022/01/15/scvi-tools-trap/" title="记在用scvi-tools时踩过的坑">记在用scvi-tools时踩过的坑</a><time datetime="2022-01-15T03:39:38.000Z" title="发表于 2022-01-15 11:39:38">2022-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/01/12/single-cell-multiomics-integration/" title="单细胞数据整合：读Paper/翻Github时发现的一些工具"><img src="/2022/01/12/single-cell-multiomics-integration/%E5%8D%95%E7%BB%86%E8%83%9E%E6%95%B4%E5%90%88%E7%AD%96%E7%95%A5.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="单细胞数据整合：读Paper/翻Github时发现的一些工具"/></a><div class="content"><a class="title" href="/2022/01/12/single-cell-multiomics-integration/" title="单细胞数据整合：读Paper/翻Github时发现的一些工具">单细胞数据整合：读Paper/翻Github时发现的一些工具</a><time datetime="2022-01-12T06:55:17.000Z" title="发表于 2022-01-12 14:55:17">2022-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/01/12/biostars-first-try/" title="单细胞多模态整合：记我在Biostars上的第一次提问"><img src="/2022/01/12/biostars-first-try/biostars.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="单细胞多模态整合：记我在Biostars上的第一次提问"/></a><div class="content"><a class="title" href="/2022/01/12/biostars-first-try/" title="单细胞多模态整合：记我在Biostars上的第一次提问">单细胞多模态整合：记我在Biostars上的第一次提问</a><time datetime="2022-01-11T16:02:07.000Z" title="发表于 2022-01-12 00:02:07">2022-01-12</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By Arita Zhang</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-nest.min.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/click-heart.min.js" async="async" mobile="false"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
